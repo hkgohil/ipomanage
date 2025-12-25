@@ -5,6 +5,7 @@ import { IPOList } from "./ipo-list"
 import { AllotmentChecker } from "./allotment-checker"
 import { MyApplications } from "./my-applications"
 import { DashboardSummary } from "./dashboard-summary"
+import { PanSection } from "./pan-section"
 import { useAuth } from "@/lib/auth"
 
 export function Dashboard() {
@@ -16,14 +17,15 @@ export function Dashboard() {
       <Header />
       <main className="animate-fade-in">
         <div className="container mx-auto px-4 py-8 space-y-8">
+          <IPOList />
           {!isAdmin && (
             <>
               <DashboardSummary />
+              <PanSection />
               <MyApplications />
             </>
           )}
           <AllotmentChecker />
-          <IPOList />
         </div>
       </main>
     </div>
