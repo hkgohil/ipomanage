@@ -50,6 +50,9 @@ export async function connectToDatabase() {
     await client.db("admin").command({ ping: 1 })
     
     const db = client.db(dbName)
+    
+    const collections = await db.listCollections().toArray()
+    console.log(`Connected to MongoDB. Database: ${dbName}, Collections: ${collections.length}`)
 
     cachedClient = client
     cachedDb = db
@@ -57,6 +60,19 @@ export async function connectToDatabase() {
     return { client, db }
   } catch (error: any) {
     console.error("MongoDB connection error:", error.message)
+    
+    if (error.message?.includes("authentication failed")) {
+      throw new Error("MongoDB authentication failed. Check your username and password in MONGODB_URI")
+    }
+    
+    if (error.message?.includes("ENOTFOUND") || error.message?.includes("getaddrinfo")) {
+      throw new Error("MongoDB server not found. Check your MONGODB_URI connection string")
+    }
+    
+    if (error.message?.includes("timeout")) {
+      throw new Error("MongoDB connection timeout. Check your network access settings in MongoDB Atlas")
+    }
+    
     throw new Error(`Failed to connect to MongoDB: ${error.message}`)
   }
 }

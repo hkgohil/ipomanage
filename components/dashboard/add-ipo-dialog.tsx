@@ -19,8 +19,15 @@ interface AddIPODialogProps {
 
 export function AddIPODialog({ open, onOpenChange }: AddIPODialogProps) {
   const { addIPO } = useIPOStore()
+  const { user } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
+  
+  const isAdmin = user?.role === "admin"
+  
+  if (!isAdmin) {
+    return null
+  }
 
   const [formData, setFormData] = useState({
     name: "",

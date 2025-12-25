@@ -72,11 +72,11 @@ export function LoginForm() {
           <Input
             id="email"
             type="email"
-            placeholder="you@example.com"
+            placeholder="mail@example.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             disabled={isLoading}
-            className="h-12 text-base"
+            className="h-12 text-base font-medium"
             required
           />
         </div>
@@ -92,7 +92,7 @@ export function LoginForm() {
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             disabled={isLoading}
-            className="h-12 text-base"
+            className="h-12 text-base font-medium"
             required
           />
         </div>

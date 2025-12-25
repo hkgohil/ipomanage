@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useToast } from "@/hooks/use-toast"
+import { useAuth } from "@/lib/auth"
 import { Loader2 } from "lucide-react"
 
 interface EditIPODialogProps {
@@ -19,8 +20,15 @@ interface EditIPODialogProps {
 
 export function EditIPODialog({ open, onOpenChange, ipo }: EditIPODialogProps) {
   const { updateIPO } = useIPOStore()
+  const { user } = useAuth()
   const [isLoading, setIsLoading] = useState(false)
   const { toast } = useToast()
+  
+  const isAdmin = user?.role === "admin"
+  
+  if (!isAdmin) {
+    return null
+  }
 
   const [formData, setFormData] = useState({
     name: ipo.name,
