@@ -42,30 +42,34 @@ export function PanSection() {
 
         {user?.panCards && user.panCards.length > 0 ? (
           <div className="space-y-2">
-            {user.panCards.map((pan) => (
-              <div
-                key={pan}
-                className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-muted/30 hover:bg-muted/50 transition-colors"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center">
-                    <Shield className="h-4 w-4 text-primary" />
-                  </div>
-                  <div>
-                    <span className="font-mono text-sm font-medium">{pan}</span>
-                    <p className="text-xs text-muted-foreground mt-0.5">Active</p>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8"
-                  onClick={() => handleRemovePAN(pan)}
+            {user.panCards.map((panCard) => {
+              const pan = typeof panCard === "string" ? panCard : panCard.pan
+              const name = typeof panCard === "string" ? "Unknown" : (panCard.name || "Unknown")
+              return (
+                <div
+                  key={pan}
+                  className="flex items-center justify-between p-3 rounded-lg border border-border/50 bg-muted/30 hover:bg-muted/50 transition-colors"
                 >
-                  <Trash2 className="h-4 w-4 text-muted-foreground hover:text-red-600" />
-                </Button>
-              </div>
-            ))}
+                  <div className="flex items-center gap-3 flex-1 min-w-0">
+                    <div className="h-8 w-8 rounded-md bg-primary/10 flex items-center justify-center shrink-0">
+                      <Shield className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <div className="font-mono text-sm font-medium">{pan}</div>
+                      <p className="text-xs text-muted-foreground mt-0.5 truncate">{name}</p>
+                    </div>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-8 w-8 shrink-0"
+                    onClick={() => handleRemovePAN(pan)}
+                  >
+                    <Trash2 className="h-4 w-4 text-muted-foreground hover:text-red-600" />
+                  </Button>
+                </div>
+              )
+            })}
           </div>
         ) : (
           <div className="text-center py-8">

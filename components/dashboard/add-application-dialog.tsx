@@ -125,11 +125,18 @@ export function AddApplicationDialog({ open, onOpenChange }: AddApplicationDialo
                   <SelectValue placeholder="Select PAN" />
                 </SelectTrigger>
                 <SelectContent>
-                  {user.panCards.map((pan) => (
-                    <SelectItem key={pan} value={pan}>
-                      {pan}
-                    </SelectItem>
-                  ))}
+                  {user.panCards.map((panCard) => {
+                    const pan = typeof panCard === "string" ? panCard : panCard.pan
+                    const name = typeof panCard === "string" ? "" : (panCard.name || "")
+                    return (
+                      <SelectItem key={pan} value={pan}>
+                        <div className="flex flex-col">
+                          <span className="font-mono">{pan}</span>
+                          {name && <span className="text-xs text-muted-foreground">{name}</span>}
+                        </div>
+                      </SelectItem>
+                    )
+                  })}
                 </SelectContent>
               </Select>
             ) : (

@@ -3,12 +3,17 @@
 import { create } from "zustand"
 import { persist } from "zustand/middleware"
 
+export interface PanCard {
+  pan: string
+  name: string
+}
+
 export interface User {
   id: string
   email: string
   password: string
   role: "admin" | "user"
-  panCards: string[]
+  panCards: PanCard[]
   createdAt: string
 }
 
@@ -18,8 +23,8 @@ interface AuthState {
   signup: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>
   logout: () => void
-  addPanCard: (panCard: string) => void
-  removePanCard: (panCard: string) => void
+  addPanCard: (panCard: PanCard) => void
+  removePanCard: (pan: string) => void
 }
 
 export const useAuth = create<AuthState>()(
@@ -69,13 +74,30 @@ export const useAuth = create<AuthState>()(
           return { success: false, error: "Invalid email or password" }
         }
 
+        // Migrate old PAN cards (strings) to new format (objects with name)
+        if (user.panCards && user.panCards.length > 0) {
+          const migratedPanCards = user.panCards.map((pan: any) => {
+            if (typeof pan === "string") {
+              return { pan, name: "Unknown" }
+            }
+            return pan
+          })
+          user.panCards = migratedPanCards
+          
+          // Update in storage
+          const updatedUsers = existingUsers.map((u: User) => 
+            u.id === user.id ? { ...u, panCards: migratedPanCards } : u
+          )
+          localStorage.setItem("all-users", JSON.stringify(updatedUsers))
+        }
+
         set({ user, isLoading: false })
         return { success: true }
       },
       logout: () => {
         set({ user: null })
       },
-      addPanCard: (panCard: string) => {
+      addPanCard: (panCard: PanCard) => {
         set((state) => {
           if (!state.user) return state
           const updatedUser = {
@@ -89,12 +111,12 @@ export const useAuth = create<AuthState>()(
           return { user: updatedUser }
         })
       },
-      removePanCard: (panCard: string) => {
+      removePanCard: (pan: string) => {
         set((state) => {
           if (!state.user) return state
           const updatedUser = {
             ...state.user,
-            panCards: state.user.panCards.filter((p) => p !== panCard),
+            panCards: state.user.panCards.filter((p) => p.pan !== pan),
           }
           // Update in all-users storage
           const allUsers = JSON.parse(localStorage.getItem("all-users") || "[]")
